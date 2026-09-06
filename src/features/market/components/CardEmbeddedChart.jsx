@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { createChart, CandlestickSeries, HistogramSeries, LineSeries } from 'lightweight-charts';
 import { generateCandlestickData } from '../../../services/mockCryptoData';
+import { useThemeStore } from '../../../stores/useThemeStore';
 
 export default function CardEmbeddedChart({ asset, timeframe = '4H', showPrediction = true, showOverlays = true }) {
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const [renderError, setRenderError] = useState(false);
   const [chartData, setChartData] = useState({ candles: [], prediction: null });
+  const { theme } = useThemeStore();
 
   useEffect(() => {
     if (!asset || !asset.price) return;
@@ -15,145 +17,153 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
     const generated = generateCandlestickData(asset.price, 45, interval);
     setChartData(generated);
 
-    if (!chartContainerRef.current) return;
-    const container = chartContainerRef.current;
-    container.innerHTML = '';
+    const timer = setTimeout(() => {
+      if (!chartContainerRef.current) return;
+      const container = chartContainerRef.current;
+      container.innerHTML = '';
 
-    const width = container.clientWidth || 340;
-    const height = container.clientHeight || 230;
+      const width = container.clientWidth > 0 ? container.clientWidth : 340;
+      const height = container.clientHeight > 0 ? container.clientHeight : 230;
 
-    let chart;
-    try {
-      // Lightweight Charts v5 Instance Creation
-      chart = createChart(container, {
-        width,
-        height,
-        layout: {
-          background: { color: '#09090B' },
-          textColor: '#71717A',
-          fontFamily: "'Inter', sans-serif",
-        },
-        grid: {
-          vertLines: { color: '#16161A' },
-          horzLines: { color: '#16161A' },
-        },
-        crosshair: {
-          mode: 1,
-          vertLine: { color: '#8B5CF6', width: 1, style: 3 },
-          horzLine: { color: '#8B5CF6', width: 1, style: 3 },
-        },
-        rightPriceScale: {
-          borderColor: '#27272A',
-          textColor: '#A1A1AA',
-          scaleMargins: { top: 0.1, bottom: 0.2 },
-        },
-        timeScale: {
-          borderColor: '#27272A',
-          timeVisible: true,
-          secondsVisible: false,
-        },
-        handleScroll: true,
-        handleScale: true,
-      });
+      const isDark = theme === 'dark';
+      const bgColor = isDark ? '#0D1117' : '#FFFFFF';
+      const textColor = isDark ? '#94A3B8' : '#475569';
+      const gridColor = isDark ? '#1E293B' : '#F1F5F9';
+      const borderColor = isDark ? '#1E293B' : '#E2E8F0';
+      const accentBlue = isDark ? '#3B82F6' : '#2563EB';
 
-      chartInstanceRef.current = chart;
-
-      // 1. Candlestick Series (v5 API: chart.addSeries(CandlestickSeries))
-      const candleSeries = chart.addSeries
-        ? chart.addSeries(CandlestickSeries, {
-            upColor: '#10B981',
-            downColor: '#EF4444',
-            borderVisible: false,
-            wickUpColor: '#10B981',
-            wickDownColor: '#EF4444',
-          })
-        : chart.addCandlestickSeries({
-            upColor: '#10B981',
-            downColor: '#EF4444',
-            borderVisible: false,
-            wickUpColor: '#10B981',
-            wickDownColor: '#EF4444',
-          });
-
-      // 2. Volume Series (v5 API: chart.addSeries(HistogramSeries))
-      const volumeSeries = chart.addSeries
-        ? chart.addSeries(HistogramSeries, {
-            color: '#27272A',
-            priceFormat: { type: 'volume' },
-            priceScaleId: 'volume',
-          })
-        : chart.addHistogramSeries({
-            color: '#27272A',
-            priceFormat: { type: 'volume' },
-            priceScaleId: 'volume',
-          });
-
-      if (chart.priceScale) {
-        chart.priceScale('volume').applyOptions({
-          scaleMargins: { top: 0.8, bottom: 0 },
+      let chart;
+      try {
+        chart = createChart(container, {
+          width,
+          height,
+          layout: {
+            background: { color: bgColor },
+            textColor: textColor,
+            fontFamily: "'Inter', sans-serif",
+          },
+          grid: {
+            vertLines: { color: gridColor },
+            horzLines: { color: gridColor },
+          },
+          crosshair: {
+            mode: 1,
+            vertLine: { color: accentBlue, width: 1, style: 3 },
+            horzLine: { color: accentBlue, width: 1, style: 3 },
+          },
+          rightPriceScale: {
+            borderColor: borderColor,
+            textColor: textColor,
+            scaleMargins: { top: 0.1, bottom: 0.2 },
+          },
+          timeScale: {
+            borderColor: borderColor,
+            timeVisible: true,
+            secondsVisible: false,
+          },
+          handleScroll: true,
+          handleScale: true,
         });
-      }
 
-      if (generated.candles && generated.candles.length > 0) {
-        candleSeries.setData(generated.candles);
+        chartInstanceRef.current = chart;
 
-        const volumeData = generated.candles.map((item) => ({
-          time: item.time,
-          value: item.volume || 100,
-          color: item.close >= item.open ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.25)',
-        }));
-        volumeSeries.setData(volumeData);
-      }
-
-      // 3. AI Prediction Path (v5 API: chart.addSeries(LineSeries))
-      if (showPrediction && generated.prediction?.line && generated.prediction.line.length > 0) {
-        const predictionSeries = chart.addSeries
-          ? chart.addSeries(LineSeries, {
-              color: '#8B5CF6',
-              lineWidth: 2,
-              lineStyle: 2,
-              title: 'AI Forecast Path',
+        // 1. Candlestick Series
+        const candleSeries = chart.addSeries
+          ? chart.addSeries(CandlestickSeries, {
+              upColor: '#10B981',
+              downColor: '#EF4444',
+              borderVisible: false,
+              wickUpColor: '#10B981',
+              wickDownColor: '#EF4444',
             })
-          : chart.addLineSeries({
-              color: '#8B5CF6',
-              lineWidth: 2,
-              lineStyle: 2,
-              title: 'AI Forecast Path',
+          : chart.addCandlestickSeries({
+              upColor: '#10B981',
+              downColor: '#EF4444',
+              borderVisible: false,
+              wickUpColor: '#10B981',
+              wickDownColor: '#EF4444',
             });
 
-        predictionSeries.setData(generated.prediction.line);
-      }
+        // 2. Volume Series
+        const volumeSeries = chart.addSeries
+          ? chart.addSeries(HistogramSeries, {
+              color: borderColor,
+              priceFormat: { type: 'volume' },
+              priceScaleId: 'volume',
+            })
+          : chart.addHistogramSeries({
+              color: borderColor,
+              priceFormat: { type: 'volume' },
+              priceScaleId: 'volume',
+            });
 
-      // 4. Overlays: Target TP & SL
-      if (showOverlays) {
-        if (asset.aiTargetPrice) {
-          candleSeries.createPriceLine({
-            price: asset.aiTargetPrice,
-            color: '#10B981',
-            lineWidth: 1,
-            lineStyle: 2,
-            axisLabelVisible: true,
-            title: `AI TP ($${asset.aiTargetPrice.toLocaleString()})`,
+        if (chart.priceScale) {
+          chart.priceScale('volume').applyOptions({
+            scaleMargins: { top: 0.8, bottom: 0 },
           });
         }
-        if (asset.aiStopLoss) {
-          candleSeries.createPriceLine({
-            price: asset.aiStopLoss,
-            color: '#EF4444',
-            lineWidth: 1,
-            lineStyle: 2,
-            axisLabelVisible: true,
-            title: `AI SL ($${asset.aiStopLoss.toLocaleString()})`,
-          });
-        }
-      }
 
-      chart.timeScale().fitContent();
-      setRenderError(false);
-    } catch (err) {
-      console.warn('CardEmbeddedChart error, using SVG fallback renderer:', err);
-      setRenderError(true);
-    }
+        if (generated.candles && generated.candles.length > 0) {
+          candleSeries.setData(generated.candles);
+
+          const volumeData = generated.candles.map((item) => ({
+            time: item.time,
+            value: item.volume || 100,
+            color: item.close >= item.open ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.25)',
+          }));
+          volumeSeries.setData(volumeData);
+        }
+
+        // 3. AI Prediction Path
+        if (showPrediction && generated.prediction?.line && generated.prediction.line.length > 0) {
+          const predictionSeries = chart.addSeries
+            ? chart.addSeries(LineSeries, {
+                color: accentBlue,
+                lineWidth: 2,
+                lineStyle: 2,
+                title: 'AI Forecast Path',
+              })
+            : chart.addLineSeries({
+                color: accentBlue,
+                lineWidth: 2,
+                lineStyle: 2,
+                title: 'AI Forecast Path',
+              });
+
+          predictionSeries.setData(generated.prediction.line);
+        }
+
+        // 4. Overlays: Target TP & SL
+        if (showOverlays) {
+          if (asset.aiTargetPrice) {
+            candleSeries.createPriceLine({
+              price: asset.aiTargetPrice,
+              color: '#10B981',
+              lineWidth: 1,
+              lineStyle: 2,
+              axisLabelVisible: true,
+              title: `AI TP ($${asset.aiTargetPrice.toLocaleString()})`,
+            });
+          }
+          if (asset.aiStopLoss) {
+            candleSeries.createPriceLine({
+              price: asset.aiStopLoss,
+              color: '#EF4444',
+              lineWidth: 1,
+              lineStyle: 2,
+              axisLabelVisible: true,
+              title: `AI SL ($${asset.aiStopLoss.toLocaleString()})`,
+            });
+          }
+        }
+
+        chart.timeScale().fitContent();
+        setRenderError(false);
+      } catch (err) {
+        console.warn('CardEmbeddedChart error, fallback to SVG:', err);
+        setRenderError(true);
+      }
+    }, 50);
 
     const handleResize = () => {
       if (chartContainerRef.current && chartInstanceRef.current) {
@@ -168,6 +178,7 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
     window.addEventListener('resize', handleResize);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
       if (chartInstanceRef.current) {
         try {
@@ -176,7 +187,7 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
         chartInstanceRef.current = null;
       }
     };
-  }, [asset, timeframe, showPrediction, showOverlays]);
+  }, [asset, timeframe, showPrediction, showOverlays, theme]);
 
   // High-precision SVG Candlestick Fallback Component if Canvas fails
   if (renderError || !chartData.candles || chartData.candles.length === 0) {
@@ -187,13 +198,13 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
     const range = maxPrice - minPrice || 1;
 
     return (
-      <div className="w-full h-[230px] bg-[#09090B] rounded-lg overflow-hidden border border-[#27272A]/70 p-2 flex flex-col justify-between relative">
+      <div className="w-full h-[230px] bg-white dark:bg-[#0D1117] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 p-2 flex flex-col justify-between relative">
         <div className="relative w-full h-[210px]">
           <svg className="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="none">
             {/* Grid lines */}
-            <line x1="0" y1="50" x2="400" y2="50" stroke="#16161A" strokeWidth="1" />
-            <line x1="0" y1="100" x2="400" y2="100" stroke="#16161A" strokeWidth="1" />
-            <line x1="0" y1="150" x2="400" y2="150" stroke="#16161A" strokeWidth="1" />
+            <line x1="0" y1="50" x2="400" y2="50" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
+            <line x1="0" y1="100" x2="400" y2="100" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
+            <line x1="0" y1="150" x2="400" y2="150" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
 
             {/* Candlesticks */}
             {candles.map((c, i) => {
@@ -221,7 +232,7 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
               <path
                 d="M 300 100 Q 340 70, 390 50"
                 fill="none"
-                stroke="#8B5CF6"
+                stroke={theme === 'dark' ? '#3B82F6' : '#2563EB'}
                 strokeWidth="2.5"
                 strokeDasharray="4"
               />
@@ -234,7 +245,7 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
 
   return (
     <div
-      className="w-full h-[230px] bg-[#09090B] rounded-lg overflow-hidden border border-[#27272A]/70 relative"
+      className="w-full h-[230px] bg-white dark:bg-[#0D1117] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 relative transition-colors"
       style={{ height: '230px' }}
     >
       <div ref={chartContainerRef} className="w-full h-[230px]" style={{ height: '230px' }} />

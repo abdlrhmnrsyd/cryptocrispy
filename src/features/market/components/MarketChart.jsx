@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { createChart, CandlestickSeries, HistogramSeries, LineSeries } from 'lightweight-charts';
 import { generateCandlestickData } from '../../../services/mockCryptoData';
+import { useThemeStore } from '../../../stores/useThemeStore';
 
 export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) {
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const [renderError, setRenderError] = useState(false);
   const [chartData, setChartData] = useState({ candles: [], prediction: null });
+  const { theme } = useThemeStore();
 
   useEffect(() => {
     if (!asset || !asset.price) return;
@@ -22,6 +24,13 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
     const width = container.clientWidth || 700;
     const height = container.clientHeight || 520;
 
+    const isDark = theme === 'dark';
+    const bgColor = isDark ? '#0D1117' : '#FFFFFF';
+    const textColor = isDark ? '#94A3B8' : '#475569';
+    const gridColor = isDark ? '#1E293B' : '#F1F5F9';
+    const borderColor = isDark ? '#1E293B' : '#E2E8F0';
+    const accentBlue = isDark ? '#3B82F6' : '#2563EB';
+
     let chart;
     try {
       // Lightweight Charts v5 Instance Creation
@@ -29,25 +38,25 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
         width,
         height,
         layout: {
-          background: { color: '#09090B' },
-          textColor: '#A1A1AA',
+          background: { color: bgColor },
+          textColor: textColor,
           fontFamily: "'Inter', sans-serif",
         },
         grid: {
-          vertLines: { color: '#16161A' },
-          horzLines: { color: '#16161A' },
+          vertLines: { color: gridColor },
+          horzLines: { color: gridColor },
         },
         crosshair: {
           mode: 1,
-          vertLine: { color: '#8B5CF6', width: 1, style: 3 },
-          horzLine: { color: '#8B5CF6', width: 1, style: 3 },
+          vertLine: { color: accentBlue, width: 1, style: 3 },
+          horzLine: { color: accentBlue, width: 1, style: 3 },
         },
         rightPriceScale: {
-          borderColor: '#27272A',
-          textColor: '#A1A1AA',
+          borderColor: borderColor,
+          textColor: textColor,
         },
         timeScale: {
-          borderColor: '#27272A',
+          borderColor: borderColor,
           timeVisible: true,
           secondsVisible: false,
         },
@@ -57,7 +66,7 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
 
       chartInstanceRef.current = chart;
 
-      // 1. Candlestick Series (v5 API: chart.addSeries(CandlestickSeries))
+      // 1. Candlestick Series
       const candleSeries = chart.addSeries
         ? chart.addSeries(CandlestickSeries, {
             upColor: '#10B981',
@@ -74,15 +83,15 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
             wickDownColor: '#EF4444',
           });
 
-      // 2. Volume Series (v5 API: chart.addSeries(HistogramSeries))
+      // 2. Volume Series
       const volumeSeries = chart.addSeries
         ? chart.addSeries(HistogramSeries, {
-            color: '#27272A',
+            color: borderColor,
             priceFormat: { type: 'volume' },
             priceScaleId: 'volume',
           })
         : chart.addHistogramSeries({
-            color: '#27272A',
+            color: borderColor,
             priceFormat: { type: 'volume' },
             priceScaleId: 'volume',
           });
@@ -104,17 +113,17 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
         volumeSeries.setData(volumeData);
       }
 
-      // 3. AI Prediction Path (v5 API: chart.addSeries(LineSeries))
+      // 3. AI Prediction Path
       if (generated.prediction?.line && generated.prediction.line.length > 0) {
         const predictionSeries = chart.addSeries
           ? chart.addSeries(LineSeries, {
-              color: '#8B5CF6',
+              color: accentBlue,
               lineWidth: 2.5,
               lineStyle: 2,
               title: 'AI Forecast Path',
             })
           : chart.addLineSeries({
-              color: '#8B5CF6',
+              color: accentBlue,
               lineWidth: 2.5,
               lineStyle: 2,
               title: 'AI Forecast Path',
@@ -175,7 +184,7 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
         chartInstanceRef.current = null;
       }
     };
-  }, [asset, timeframe, overlays]);
+  }, [asset, timeframe, overlays, theme]);
 
   // High-precision SVG Candlestick Fallback Component if Canvas fails
   if (renderError || !chartData.candles || chartData.candles.length === 0) {
@@ -186,19 +195,19 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
     const range = maxPrice - minPrice || 1;
 
     return (
-      <div className="w-full h-[520px] bg-[#09090B] rounded-xl overflow-hidden border border-[#27272A] p-4 flex flex-col justify-between relative">
-        <div className="flex items-center justify-between text-xs text-[#71717A] border-b border-[#1F1F23] pb-2 font-mono">
+      <div className="w-full h-[520px] bg-white dark:bg-[#0D1117] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 p-4 flex flex-col justify-between relative">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 pb-2 font-mono">
           <span>{asset.symbol} • {timeframe} SVG Chart</span>
-          <span className="text-emerald-400 font-bold">${asset.price.toLocaleString()}</span>
+          <span className="text-emerald-600 dark:text-emerald-400 font-bold">${asset.price.toLocaleString()}</span>
         </div>
 
         {/* SVG Candlesticks Render */}
         <div className="relative w-full h-[430px]">
           <svg className="w-full h-full" viewBox="0 0 800 400" preserveAspectRatio="none">
             {/* Grid lines */}
-            <line x1="0" y1="100" x2="800" y2="100" stroke="#16161A" strokeWidth="1" />
-            <line x1="0" y1="200" x2="800" y2="200" stroke="#16161A" strokeWidth="1" />
-            <line x1="0" y1="300" x2="800" y2="300" stroke="#16161A" strokeWidth="1" />
+            <line x1="0" y1="100" x2="800" y2="100" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
+            <line x1="0" y1="200" x2="800" y2="200" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
+            <line x1="0" y1="300" x2="800" y2="300" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
 
             {/* Support / Resistance Lines */}
             {overlays.supportResistance && (
@@ -237,7 +246,7 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
             <path
               d="M 600 210 Q 680 160, 780 120"
               fill="none"
-              stroke="#8B5CF6"
+              stroke={theme === 'dark' ? '#3B82F6' : '#2563EB'}
               strokeWidth="3"
               strokeDasharray="5"
             />
@@ -249,7 +258,7 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
 
   return (
     <div
-      className="w-full h-[520px] bg-[#09090B] rounded-xl overflow-hidden border border-[#27272A] relative"
+      className="w-full h-[520px] bg-white dark:bg-[#0D1117] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 relative transition-colors"
       style={{ height: '520px' }}
     >
       <div ref={chartContainerRef} className="w-full h-[520px]" style={{ height: '520px' }} />

@@ -5,40 +5,72 @@
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --color-bg-dark: #0E0E14;
-  --color-surface-primary: #151521;
-  --color-surface-secondary: #1B1B2B;
-  --color-surface-tertiary: #232338;
-  --color-border-dark: #292940;
-  
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #B4B4CF;
-  --color-text-muted: #757595;
-  
   --color-bullish: #10B981;
   --color-bearish: #EF4444;
-  --color-ai-violet: #8B5CF6;
-  --color-ai-indigo: #6366F1;
+  --color-brand-blue: #2563EB;
+  --color-brand-cyan: #0284C7;
 }
 
-:root {
-  color-scheme: dark;
+:root, html.light {
+  color-scheme: light;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #0E0E14;
-  color: #FFFFFF;
+  --bg-app: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-card-secondary: #F1F5F9;
+  --bg-card-tertiary: #E2E8F0;
+  --border-color: #E2E8F0;
+  --border-color-hover: #CBD5E1;
+  --text-main: #0F172A;
+  --text-sub: #475569;
+  --text-muted: #64748B;
+  --blue-primary: #2563EB;
+  --blue-secondary: #3B82F6;
+  --blue-light-bg: #EFF6FF;
+  --blue-glow: rgba(37, 99, 235, 0.15);
+  background-color: var(--bg-app);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
+}
+
+html.dark {
+  color-scheme: dark;
+  --bg-app: #070A11;
+  --bg-card: #0D1117;
+  --bg-card-secondary: #131B26;
+  --bg-card-tertiary: #1B2E4A;
+  --border-color: #1E293B;
+  --border-color-hover: #334155;
+  --text-main: #F8FAFC;
+  --text-sub: #94A3B8;
+  --text-muted: #64748B;
+  --blue-primary: #3B82F6;
+  --blue-secondary: #60A5FA;
+  --blue-light-bg: rgba(59, 130, 246, 0.12);
+  --blue-glow: rgba(59, 130, 246, 0.25);
+  background-color: var(--bg-app);
+  color: var(--text-main);
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #0E0E14;
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.18), transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 20%, rgba(99, 102, 241, 0.12), transparent 60%);
-  color: #FFFFFF;
+  background-color: var(--bg-app);
+  color: var(--text-main);
   overflow-x: hidden;
   min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html.light body {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(37, 99, 235, 0.08), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 20%, rgba(2, 132, 199, 0.06), transparent 60%);
+}
+
+html.dark body {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(37, 99, 235, 0.18), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 20%, rgba(2, 132, 199, 0.12), transparent 60%);
 }
 
 /* Custom Scrollbars */
@@ -46,38 +78,46 @@ body {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track {
-  background: #0E0E14;
+html.light ::-webkit-scrollbar-track {
+  background: #F1F5F9;
 }
-::-webkit-scrollbar-thumb {
-  background: #292940;
+html.light ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
   border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #3B3B5C;
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
 
-/* Premium Card Styles */
-.card-dark {
-  background-color: #151521;
-  border: 1px solid #292940;
+html.dark ::-webkit-scrollbar-track {
+  background: #070A11;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 3px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Card Styles */
+.card-theme {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+html.dark .card-theme {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-.card-dark-glow {
-  background: linear-gradient(180deg, #1B1B2C 0%, #151521 100%);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+.card-theme-glow {
+  background: var(--bg-card);
+  border: 1px solid var(--blue-border, rgba(37, 99, 235, 0.3));
+  box-shadow: 0 0 25px var(--blue-glow);
 }
 
-.ai-badge {
-  background: rgba(139, 92, 246, 0.15);
-  color: #C4B5FD;
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
-}
-
-.ai-card-glow {
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.12);
+.ai-badge-theme {
+  background: var(--blue-light-bg);
+  color: var(--blue-primary);
+  border: 1px solid rgba(37, 99, 235, 0.3);
 }
