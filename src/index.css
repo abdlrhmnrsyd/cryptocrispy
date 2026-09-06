@@ -5,68 +5,79 @@
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --color-bg-dark: #0B0B0E;
-  --color-surface-primary: #121218;
-  --color-surface-secondary: #181820;
-  --color-surface-tertiary: #22222E;
-  --color-border-dark: #1E1E28;
+  --color-bg-dark: #0E0E14;
+  --color-surface-primary: #151521;
+  --color-surface-secondary: #1B1B2B;
+  --color-surface-tertiary: #232338;
+  --color-border-dark: #292940;
   
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #9A9AB0;
-  --color-text-muted: #626278;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B4B4CF;
+  --color-text-muted: #757595;
   
   --color-bullish: #10B981;
   --color-bearish: #EF4444;
-  --color-ai-blue: #3B82F6;
+  --color-ai-violet: #8B5CF6;
+  --color-ai-indigo: #6366F1;
 }
 
 :root {
   color-scheme: dark;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #0B0B0E;
-  color: #FAFAFA;
+  background-color: #0E0E14;
+  color: #FFFFFF;
   -webkit-font-smoothing: antialiased;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: #0B0B0E;
-  background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.07) 0%, transparent 50%);
-  color: #FAFAFA;
+  background-color: #0E0E14;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.18), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 20%, rgba(99, 102, 241, 0.12), transparent 60%);
+  color: #FFFFFF;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0B0E;
+  background: #0E0E14;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E1E28;
+  background: #292940;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2D2D3B;
+  background: #3B3B5C;
 }
 
-/* Glass & Card Styling */
+/* Premium Card Styles */
 .card-dark {
-  background-color: #121218;
-  border: 1px solid #1E1E28;
+  background-color: #151521;
+  border: 1px solid #292940;
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
 .card-dark-glow {
-  background: linear-gradient(180deg, #161620 0%, #121218 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+  background: linear-gradient(180deg, #1B1B2C 0%, #151521 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-.bg-spotlight {
-  background-image: radial-gradient(600px circle at 50% 0px, rgba(59, 130, 246, 0.12), transparent 80%);
+.ai-badge {
+  background: rgba(139, 92, 246, 0.15);
+  color: #C4B5FD;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+}
+
+.ai-card-glow {
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.12);
 }
