@@ -7,15 +7,13 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const [renderError, setRenderError] = useState(false);
-  const [chartData, setChartData] = useState({ candles: [], prediction: null });
+  const [candlesData, setCandlesData] = useState([]);
   const { theme } = useThemeStore();
 
   useEffect(() => {
     if (!asset || !asset.price) return;
 
-    const interval = timeframe === '5m' ? 300 : timeframe === '15m' ? 900 : timeframe === '1H' ? 3600 : 14400;
-    const generated = generateCandlestickData(asset.price, 45, interval);
-    setChartData(generated);
+    setRenderError(false);
 
     const timer = setTimeout(() => {
       if (!chartContainerRef.current) return;
@@ -25,6 +23,12 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
       const width = container.clientWidth > 0 ? container.clientWidth : 340;
       const height = container.clientHeight > 0 ? container.clientHeight : 230;
 
+      const interval = timeframe === '5m' ? 300 : timeframe === '15m' ? 900 : timeframe === '1H' ? 3600 : 14400;
+      const generated = generateCandlestickData(asset.price, 45, interval);
+      if (generated && generated.candles) {
+        setCandlesData(generated.candles);
+      }
+
       const isDark = theme === 'dark';
       const bgColor = isDark ? '#0D1117' : '#FFFFFF';
       const textColor = isDark ? '#94A3B8' : '#475569';
@@ -32,9 +36,8 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
       const borderColor = isDark ? '#1E293B' : '#E2E8F0';
       const accentBlue = isDark ? '#3B82F6' : '#2563EB';
 
-      let chart;
       try {
-        chart = createChart(container, {
+        const chart = createChart(container, {
           width,
           height,
           layout: {
@@ -158,12 +161,11 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
         }
 
         chart.timeScale().fitContent();
-        setRenderError(false);
       } catch (err) {
         console.warn('CardEmbeddedChart error, fallback to SVG:', err);
         setRenderError(true);
       }
-    }, 50);
+    }, 20);
 
     const handleResize = () => {
       if (chartContainerRef.current && chartInstanceRef.current) {
@@ -189,9 +191,8 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
     };
   }, [asset, timeframe, showPrediction, showOverlays, theme]);
 
-  // High-precision SVG Candlestick Fallback Component if Canvas fails
-  if (renderError || !chartData.candles || chartData.candles.length === 0) {
-    const candles = chartData.candles.slice(-25);
+  if (renderError) {
+    const candles = candlesData.slice(-25);
     const prices = candles.flatMap((c) => [c.high, c.low]);
     const minPrice = Math.min(...prices) || asset.price * 0.95;
     const maxPrice = Math.max(...prices) || asset.price * 1.05;
@@ -201,12 +202,10 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
       <div className="w-full h-[230px] bg-white dark:bg-[#0D1117] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 p-2 flex flex-col justify-between relative">
         <div className="relative w-full h-[210px]">
           <svg className="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="none">
-            {/* Grid lines */}
             <line x1="0" y1="50" x2="400" y2="50" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
             <line x1="0" y1="100" x2="400" y2="100" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
             <line x1="0" y1="150" x2="400" y2="150" stroke={theme === 'dark' ? '#1E293B' : '#F1F5F9'} strokeWidth="1" />
 
-            {/* Candlesticks */}
             {candles.map((c, i) => {
               const x = (i / candles.length) * 380 + 10;
               const isUp = c.close >= c.open;
@@ -226,17 +225,6 @@ export default function CardEmbeddedChart({ asset, timeframe = '4H', showPredict
                 </g>
               );
             })}
-
-            {/* AI Projected Path */}
-            {showPrediction && (
-              <path
-                d="M 300 100 Q 340 70, 390 50"
-                fill="none"
-                stroke={theme === 'dark' ? '#3B82F6' : '#2563EB'}
-                strokeWidth="2.5"
-                strokeDasharray="4"
-              />
-            )}
           </svg>
         </div>
       </div>
