@@ -17,8 +17,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AppShell />}>
-          <Route index element={<OverviewPage />} />
+        {/* Main Application Shell */}
+        <Route element={<AppShell />}>
+          <Route path="/" element={<OverviewPage />} />
+          <Route path="overview" element={<Navigate to="/" replace />} />
           <Route path="markets" element={<MarketsPage />} />
           <Route path="ai-analyst" element={<AIAnalystPage />} />
           <Route path="scanner" element={<ScannerPage />} />
@@ -36,3 +38,6 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+
+

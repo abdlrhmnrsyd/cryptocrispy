@@ -27,15 +27,15 @@ export default function MarketsPage() {
   return (
     <div className="space-y-4 max-w-[1600px] mx-auto pb-6">
       {/* 1. Header Toolbar: Asset Selector, Live Price & Timeframes */}
-      <div className="p-3.5 bg-white dark:bg-[#0D1117] border border-slate-200 dark:border-slate-800 rounded-xl flex flex-wrap items-center justify-between gap-4 transition-colors shadow-sm">
+      <div className="p-3.5 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-800/90 rounded-2xl flex flex-wrap items-center justify-between gap-4 transition-all shadow-xs">
         {/* Asset Dropdown Selector & Key Stats */}
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative">
             <button
               onClick={() => setIsAssetDropdownOpen(!isAssetDropdownOpen)}
-              className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 rounded-lg text-slate-900 dark:text-white font-bold text-sm transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-1.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 rounded-xl text-slate-900 dark:text-white font-bold text-sm transition-all active:scale-95 cursor-pointer"
             >
-              <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-600/20 text-blue-600 dark:text-blue-300 flex items-center justify-center text-xs">
+              <div className="w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-black">
                 {activeAsset.base.slice(0, 3)}
               </div>
               <span>{activeAsset.symbol}</span>

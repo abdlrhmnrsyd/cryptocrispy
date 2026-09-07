@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "cryptocrispy-dev-helper": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "skills/cryptocrispy-dev-helper/SKILL.md",
+      "computedHash": "3cd50dfab10a0ff74be883713f04fe904ebf8dcf62df321528659d57bc8cb3f6"
+    },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "899b84384f74f540ea5284d9b2e9234e050998b42eacc805410b518d4226c0b3"
+    }
+  }
+}
