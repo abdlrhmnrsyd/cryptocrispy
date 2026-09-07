@@ -80,7 +80,7 @@ export default function TradingViewChart({ symbol = 'BTCUSDT', timeframe = '4H' 
   }, [symbol, timeframe]);
 
   return (
-    <div className="w-full h-[520px] bg-[#09090B] rounded-xl overflow-hidden border border-[#27272A] relative">
+    <div className="w-full h-[520px] bg-[#09090B] rounded-xl overflow-hidden border border-[#27272A] relative z-0 isolate">
       <div
         ref={containerRef}
         className="tradingview-widget-container w-full h-[520px]"

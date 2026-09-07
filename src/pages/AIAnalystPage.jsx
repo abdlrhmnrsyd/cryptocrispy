@@ -41,7 +41,7 @@ export default function AIAnalystPage() {
           </div>
           <div>
             <h1 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              AI Trading Analyst
+              AI Trading Assistant
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
                 GPT-4o Market Core
               </span>

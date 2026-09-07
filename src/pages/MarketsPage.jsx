@@ -27,7 +27,7 @@ export default function MarketsPage() {
   return (
     <div className="space-y-4 max-w-[1600px] mx-auto pb-6">
       {/* 1. Header Toolbar: Asset Selector, Live Price & Timeframes */}
-      <div className="p-3.5 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-800/90 rounded-2xl flex flex-wrap items-center justify-between gap-4 transition-all shadow-xs">
+      <div className="relative z-40 p-3.5 bg-white/95 dark:bg-[#0D1117]/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800/90 rounded-2xl flex flex-wrap items-center justify-between gap-4 transition-all shadow-xs">
         {/* Asset Dropdown Selector & Key Stats */}
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative">
@@ -39,35 +39,53 @@ export default function MarketsPage() {
                 {activeAsset.base.slice(0, 3)}
               </div>
               <span>{activeAsset.symbol}</span>
-              <ChevronDown className="w-4 h-4 text-slate-400" />
+              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isAssetDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu & Backdrop */}
             {isAssetDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-[#0D1117] border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-50 py-1 divide-y divide-slate-100 dark:divide-slate-800 max-h-80 overflow-y-auto">
-                {assets.map((asset) => (
-                  <div
-                    key={asset.symbol}
-                    onClick={() => {
-                      setActiveSymbol(asset.symbol);
-                      setIsAssetDropdownOpen(false);
-                    }}
-                    className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer flex items-center justify-between text-xs"
-                  >
-                    <div>
-                      <div className="font-semibold text-slate-900 dark:text-white">{asset.symbol}</div>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400">{asset.name}</div>
-                    </div>
-                    <div className="text-right font-mono">
-                      <div className="text-slate-900 dark:text-white">${asset.price.toLocaleString()}</div>
-                      <div className={asset.change24h >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
-                        {asset.change24h >= 0 ? '+' : ''}
-                        {asset.change24h}%
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsAssetDropdownOpen(false)}
+                />
+                <div className="absolute left-0 top-full mt-2 w-72 bg-white dark:bg-[#0D1117] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 py-1.5 divide-y divide-slate-100 dark:divide-slate-800 max-h-80 overflow-y-auto ring-1 ring-black/10 dark:ring-white/10 animate-in fade-in zoom-in-95 duration-100">
+                  {assets.map((asset) => (
+                    <div
+                      key={asset.symbol}
+                      onClick={() => {
+                        setActiveSymbol(asset.symbol);
+                        setIsAssetDropdownOpen(false);
+                      }}
+                      className={`p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer flex items-center justify-between text-xs transition-colors ${
+                        activeAsset.symbol === asset.symbol ? 'bg-blue-50/70 dark:bg-blue-950/30' : ''
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] font-black font-mono">
+                          {asset.base.slice(0, 3)}
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <span>{asset.symbol}</span>
+                            {activeAsset.symbol === asset.symbol && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                            )}
+                          </div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400">{asset.name}</div>
+                        </div>
+                      </div>
+                      <div className="text-right font-mono">
+                        <div className="text-slate-900 dark:text-white font-semibold">${asset.price.toLocaleString()}</div>
+                        <div className={`text-[11px] font-bold ${asset.change24h >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                          {asset.change24h >= 0 ? '+' : ''}
+                          {asset.change24h}%
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 

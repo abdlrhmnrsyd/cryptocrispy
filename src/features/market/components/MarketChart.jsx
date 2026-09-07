@@ -237,7 +237,7 @@ export default function MarketChart({ asset, timeframe = '4H', overlays = {} }) 
 
   return (
     <div
-      className="w-full h-[520px] bg-white dark:bg-[#0D1117] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 relative transition-colors"
+      className="w-full h-[520px] bg-white dark:bg-[#0D1117] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 relative z-0 isolate transition-colors"
       style={{ height: '520px' }}
     >
       <div ref={chartContainerRef} className="w-full h-[520px]" style={{ height: '520px' }} />

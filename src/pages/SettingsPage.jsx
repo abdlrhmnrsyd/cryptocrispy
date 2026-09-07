@@ -26,9 +26,19 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-8">
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Platform Settings</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400">Manage account security, AI copilot sensitivity, theme preferences, and trading parameters</p>
+      <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-[#0D1117] border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-base font-bold text-white shadow-md shadow-blue-500/25">
+          AR
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white tracking-tight">Abdul Rahman Rasyid</h1>
+            <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+              VIP Tier 3
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400">abdul.rasyid@cryptocrispy.ai • Institutional Pro Analyst • 2FA Active</p>
+        </div>
       </div>
 
       {/* Tabs Layout */}

@@ -38,18 +38,6 @@ export default function TopBar({ onToggleSidebar }) {
 
       {/* Right: Market Status, Theme Switcher, Notifications & User */}
       <div className="flex items-center gap-3">
-        {/* Live Market Status Pill */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-slate-100/90 dark:bg-[#0D1117]/90 border border-slate-200/90 dark:border-slate-800/90 rounded-full text-[11px] font-medium shadow-2xs">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="font-semibold text-slate-800 dark:text-slate-100">Market Live</span>
-          <span className="text-slate-500 dark:text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-2 flex items-center gap-1 font-mono text-[10px]">
-            <Activity className="w-3 h-3 text-blue-500" /> 12ms ping
-          </span>
-        </div>
-
         {/* Theme Switcher Toggle Button */}
         <button
           onClick={toggleTheme}
